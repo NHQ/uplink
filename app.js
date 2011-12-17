@@ -35,6 +35,7 @@ app.configure('production', function(){
   // Routes
   
   app.get('/', function(req, res){
+	console.log(req.socket.remoteAddress)
     res.render('interface', {
   		layout: false,
       title: 'Interface'
@@ -42,12 +43,19 @@ app.configure('production', function(){
   });
 
   io.sockets.on('connection', function (socket) {	
-  	socket.on('blob', function(data){
-  		var base64 = function (encoded) {
-  			var buff = new Buffer(encoded, 'base64'),
-  					end = buff.byteLength;
-  		  return buff.write('utf8', 0, end);
-  		};
+		
+		socket.on('inform', function(meta){
+			var buff = new Buffer(meta.blocks * meta.blockSize);
+			
+			this.on(meta.name, function(data){
+				buff.fill(data[4],data[2],data[2]+256)
+				console.log(buff.toString('utf8'))
+			})
+			
+			this.emit('copy:'+data.name)
+		});
+		
+  	socket.on('blob', function(i, data){
   		if(typeof data === 'object'){
   		}
   		if(Array.isArray(data)){
