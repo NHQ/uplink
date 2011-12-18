@@ -45,14 +45,25 @@ app.configure('production', function(){
   io.sockets.on('connection', function (socket) {	
 		
 		socket.on('inform', function(meta){
-			var buff = new Buffer(meta.blocks * meta.blockSize);
+			console.log(meta)
+			var meta = meta
+			,		buff = new Buffer(meta.size) // alt = use blockcount * blocksize
+			,		recd = 0;
 			
 			this.on(meta.name, function(data){
-				buff.fill(data[4],data[2],data[2]+256)
-				console.log(buff.toString('utf8'))
+				//++recd;
+				console.log(Buffer.isBuffer(data[1]));
+				var boof = new Buffer(data[1])
+				for(x=0;y=31;++x){
+					buff.writeUInt8(boof.slice(0),(8*x)+(256*data[0]))
+				}
+//				buff.fill(data[1],data[0]*256,(data[0]*256)+256)
+				if(recd == meta.blockCount){
+					console.log(buff.toString('utf8'))					
+				}
 			})
 			
-			this.emit('copy:'+data.name)
+			this.emit('copy:'+meta.name)
 		});
 		
   	socket.on('blob', function(i, data){
