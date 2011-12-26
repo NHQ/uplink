@@ -1,6 +1,6 @@
 
 	var ui = {}
-	ui.sendFile = function(name, type, offset, blockCount, i, blob){
+	ui.sendFile = function(name, type, offset, length, blob){
 
     var reader = new FileReader();      
 		var blob = blob;
@@ -14,7 +14,7 @@
  //       $('#console').html(i)
 
 
-				ui.socket.emit(name, [i, uInt8Array])
+				ui.socket.emit(name, [offset, length, uInt8Array])
     };
 
     reader.onerror = function(x) {
@@ -37,8 +37,11 @@
 		ui.socket.on('copy:'+name, function(data){
 			sets.forEach(function(e,i){
 				var blob = file.webkitSlice(0 + (blockSize * i), (blockSize * i) + blockSize)
-				console.log(blob)
-				ui.sendFile(name, type, blockCount * i, blockCount, i, blob)
+				,		start = blockCount * i
+				,		end = (blockCount * i) + blob.length
+				;
+				console.log(blob, blob.length)
+				ui.sendFile(name, type, start, blob.length, blob)
 			})	
 		})
 
