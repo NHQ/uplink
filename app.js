@@ -4,13 +4,14 @@
  */
 
 var express = require('express')
-,		_ = require('underscore');
+,		_ = require('underscore')
+,		request = require('request');
 
 var app = module.exports = express.createServer();
-app.listen(8008);
-console.log('http://localhost:8008');
+
 var	io = require('socket.io').listen(app);
 io.set('log level', 0);
+
 // Configuration
 
 app.configure(function(){
@@ -33,7 +34,27 @@ app.configure('production', function(){
 });
 
   // Routes
-  
+
+request({uri: 'http://citizenmission.com:8808/ping', json: true}, function(e,r,b){
+//	var data = b;
+//	addressIP = _.last[data.connections];
+	console.log(b)
+
+	if(b.connections.length > 1){
+		request(data.connections[0]+':8008/friend', function(e,r,b){
+			console.log(b)
+		})
+	}
+	
+	app.listen(8008);
+	console.log('http://localhost:8008');
+})
+
+	app.get('/friend', function(req,res){
+		res.write('yo!dl!');
+		res.end();
+	})
+	
   app.get('/', function(req, res){
 	console.log(req.socket.remoteAddress)
     res.render('interface', {
