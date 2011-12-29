@@ -51,16 +51,15 @@ app.configure('production', function(){
 			,		expecting = meta.blockCount
 			,		blockSize = meta.blockSize
 			;
-			
+			console.log(meta)
 			this.on(meta.name, function(data){
 				++recd;
-				console.log(Buffer.isBuffer(data[2]));
-				
-				var $256_8_bitBytes = data[2];
-				
-				$256_8_bitBytes.copy(buff, data[0])
+				var boofer = new Buffer(data[2])
+				var uInt8Array = new Uint32Array(data[2])
+				var data = new DataView(event.target.result);
+				boofer.copy(buff, data[0])
 				if(recd === expecting)
-				console.log(buff.toString('utf8'));
+				console.log(recd, expecting, buff.toString('utf8'));
 			})
 			
 			this.emit('copy:'+meta.name)

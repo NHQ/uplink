@@ -6,8 +6,9 @@
 		var blob = blob;
 		
 		reader.onloadend = function(event) {
+				console.log(event);
 //				var data = new DataView(event.target.result);
-				var uInt8Array = new Uint8Array(event.target.result);
+				var uInt8Array = new Uint32Array(event.target.result);
 //				var byte3 = uInt8Array[4];
 //				var i = data.getUint8(4, 6);
 				console.log(event.target.result)
@@ -37,7 +38,7 @@
 		ui.socket.on('copy:'+name, function(data){
 			sets.forEach(function(e,i){
 				var blob = file.webkitSlice(0 + (blockSize * i), (blockSize * i) + blockSize)
-				,		start = blockCount * i
+				,		start = blockSize * i
 				,		end = (blockCount * i) + blob.length
 				;
 				console.log(blob, blob.length)
