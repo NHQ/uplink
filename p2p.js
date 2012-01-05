@@ -5,6 +5,9 @@ var http = require('http')
 
 // atomize obsessively, why don't you?
 
+var funky_date = function(){ return Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDay(), new Date().getUTCHours(), new Date().getUTCSeconds(), new Date().getUTCMilliseconds())}
+var spacetime = function(){return new Date().getTime() - (new Date().getTimezoneOffset() * 60 * 1000)}
+
 function p2p (){
 	var self = this;
 	
@@ -22,10 +25,34 @@ function p2p (){
 	};
 	
 	this.authenticate_user = function(){
-		request(host+':'+o_port+'/ping', function(e,r,b){
+		request(host+':'+o_port+'/ping/'+ spacetime(), function(e,r,b){
 			self.checkup(e)
-			self.nowIKnow(whoAmI(b))		
+			console.log(b)
+			self.nowIKnow(whoAmI(b))
+			self.keepAlive(b)		
 		})
+	};
+	
+	this.keepAlive = function(creds){
+		
+/*
+			sending client data as url encoded json string
+*/
+
+		var options = {
+		  host: 'localhost',
+		  port: 8000,
+		  path: '/keepAlive?id='+JSON.stringify(creds),
+		  method: 'POST'
+		};
+		
+		var req = http.request(options, function(res){
+			res.on('data', function(data){
+				console.log(data.toString('utf8'))
+			})
+		});
+		req.on('error', console.log)
+		req.end(JSON.stringify(creds))
 	};
 	
 	var whoAmI = function(creds){
@@ -35,8 +62,7 @@ function p2p (){
 	
 	this.response = function(req, res){
 		res.writeHead('200');
-		res.end('finish line my boy')
-		console.log(req, res)
+		res.end(JSON.stringify(self.creds))
 		return
 	};
 	
@@ -49,7 +75,7 @@ function p2p (){
 	
 	this.nowIKnow = function(cred){
 		self.createServer().listen(i_port)
-		command('open http://127.0.0.1:8001/home', console.log)
+		command('open http://127.0.0.1:8001/home')
 	};
 	
 	this.connect_to_central = function(){

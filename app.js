@@ -41,7 +41,7 @@ app.configure('production', function(){
 
 	app.get('/ping', function(req,res){
 		console.log(req.socket.remotePort, req.socket.remoteAddress);
-		res.end();
+		res.end(JSON.stringify([req.socket.remotePort, req.socket.remoteAddress]));
 	})
 	
   app.get('/', function(req, res){
