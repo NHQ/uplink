@@ -44,7 +44,8 @@ function p2p (){
 		  path: '/keepAlive?id='+encodeURIComponent(creds),
 		  method: 'POST',
 			headers: {
-				'content-type': 'application/json'
+				'content-type': 'application/json',
+				'Transfer-Encoding', 'chunked'
 			}
 		};
 		var buff = new Buffer(creds)
@@ -55,7 +56,7 @@ function p2p (){
 			})
 		});
 		req.on('error', console.log)
-		req.end(creds, 'utf8')
+		req.end(buff)
 	};
 	
 	var whoAmI = function(creds){
