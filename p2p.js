@@ -27,7 +27,6 @@ function p2p (){
 	this.authenticate_user = function(){
 		request(host+':'+o_port+'/ping/'+ spacetime(), function(e,r,b){
 			self.checkup(e)
-			console.log(b)
 			self.nowIKnow(whoAmI(b))
 			self.keepAlive(b)		
 		})
@@ -42,17 +41,21 @@ function p2p (){
 		var options = {
 		  host: 'localhost',
 		  port: 8000,
-		  path: '/keepAlive?id='+JSON.stringify(creds),
-		  method: 'POST'
+		  path: '/keepAlive?id='+encodeURIComponent(creds),
+		  method: 'POST',
+			headers: {
+				'content-type': 'application/json'
+			}
 		};
-		
+		var buff = new Buffer(creds)
+		console.log(buff.toString('utf8'))
 		var req = http.request(options, function(res){
 			res.on('data', function(data){
 				console.log(data.toString('utf8'))
 			})
 		});
 		req.on('error', console.log)
-		req.end(JSON.stringify(creds))
+		req.end(creds, 'utf8')
 	};
 	
 	var whoAmI = function(creds){
