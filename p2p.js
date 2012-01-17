@@ -1,8 +1,12 @@
+#!/usr/bin/env node
+
 var http = require('http')
 ,		request = require('request')
 ,		command = require('child_process').exec
+,		program = require('commander')
 ;
-
+program.version('0.1').option('-p --port <porto>', 'port number [porto]').parse(process.argv);
+if (program.port) console.log('ur port is', program.port);
 // atomize obsessively, why don't you?
 
 var funky_date = function(){ return Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDay(), new Date().getUTCHours(), new Date().getUTCSeconds(), new Date().getUTCMilliseconds())}
@@ -13,7 +17,7 @@ function p2p (){
 	
 	var host = 'http://localhost'
 	,		o_port = 8000
-	,		i_port = 8001
+	,		i_port = program.port || 8001
 	,		serversCount = 0
 	;
 
@@ -29,6 +33,9 @@ function p2p (){
 			self.checkup(e)
 			self.nowIKnow(whoAmI(b))
 			self.keepAlive(b)		
+			self.keepAlive(b)		
+			self.keepAlive(b)		
+
 		})
 	};
 	
@@ -45,7 +52,7 @@ function p2p (){
 		  method: 'POST',
 			headers: {
 				'content-type': 'application/json',
-				'Transfer-Encoding', 'chunked'
+				'Transfer-Encoding': 'chunked'
 			}
 		};
 		var buff = new Buffer(creds)
