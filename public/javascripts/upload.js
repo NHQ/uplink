@@ -8,7 +8,7 @@
 		reader.onloadend = function(event) {
 				console.log(event);
 //				var data = new DataView(event.target.result);
-				var uInt8Array = new Uint32Array(event.target.result);
+				var uInt8Array = new Uint8Array(event.target.result);
 //				var byte3 = uInt8Array[4];
 //				var i = data.getUint8(4, 6);
 				console.log(event.target.result)
@@ -64,7 +64,7 @@
   	  return false
 }
 	ui.init = function(){
-		this.socket = io.connect('http://localhost:8008');
+		this.socket = io.connect('http://localhost:8000');
 		this.socket.on('connect', function(){
 			console.log('connected')
 		})

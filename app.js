@@ -9,9 +9,6 @@ var express = require('express')
 
 var app = module.exports = express.createServer();
 
-var	io = require('socket.io').listen(app);
-io.set('log level', 0);
-
 // Configuration
 
 app.configure(function(){
@@ -35,58 +32,60 @@ app.configure('production', function(){
 
   // Routes
 	
-	app.listen(8000);
-	console.log('http://localhost:8008');
-	
+app.listen(8000);
+console.log('http://localhost:8000');
+var	io = require('socket.io').listen(app);
+io.set('log level', 0);
 
-	app.get('/ping', function(req,res){
-		console.log(req.socket.remotePort, req.socket.remoteAddress);
-		res.end(JSON.stringify([req.socket.remotePort, req.socket.remoteAddress]));
-	})
-	
-  app.get('/', function(req, res){
-	console.log(req.socket.remoteAddress)
-    res.render('interface', {
-  		layout: false,
-      title: 'Interface'
-    });
-  });
+app.get('/ping', function(req,res){
+	console.log(req.socket.remotePort, req.socket.remoteAddress);
+	res.end(JSON.stringify([req.socket.remotePort, req.socket.remoteAddress]));
+})
 
-  io.sockets.on('connection', function (socket) {	
-		
-		socket.on('inform', function(meta){
-			var meta = meta
-			,		buff = new Buffer(meta.size) // alt = use blockcount * blocksize
-			,		recd = 0
-			,		expecting = meta.blockCount
-			,		blockSize = meta.blockSize
-			;
-			console.log(meta)
-			this.on(meta.name, function(data){
-				++recd;
-				var boofer = new Buffer(data[2])
-				var uInt8Array = new Uint32Array(data[2])
-				var data = new DataView(event.target.result);
-				boofer.copy(buff, data[0])
-				if(recd === expecting)
-				console.log(recd, expecting, buff.toString('utf8'));
-			})
+ app.get('/', function(req, res){
+console.log(req.socket.remoteAddress)
+   res.render('interface', {
+ 		layout: false,
+     title: 'Interface'
+   });
+ });
+
+ io.sockets.on('connection', function (socket) {	
+	
+	socket.on('inform', function(meta){
+		var meta = meta
+		,		buff = new Buffer(meta.size) // alt = use blockcount * blocksize
+		,		recd = 0
+		,		expecting = meta.blockCount
+		,		blockSize = meta.blockSize
+		;
+		console.log(meta)
+		this.on(meta.name, function(data){
+			++recd;
+			var boofer = new Buffer(data[2])
+			var uInt8Array = new Uint8Array(data[2])
+			var datat = new DataView(uInt8Array);
+			console.log(boofer)
 			
-			this.emit('copy:'+meta.name)
-		});
+			boofer.copy(buff, datat[0])
+			console.log(recd, expecting, buff.length);
+		})
 		
-  	socket.on('blob', function(i, data){
-  		if(typeof data === 'object'){
-  		}
-  		if(Array.isArray(data)){
-  			var buff = new Buffer(data[1]);
-  			console.log(buff.toString('utf8'))
+		this.emit('copy:'+meta.name)
+	});
+	
+ 	socket.on('blob', function(i, data){
+ 		if(typeof data === 'object'){
+ 		}
+ 		if(Array.isArray(data)){
+ 			var buff = new Buffer(data[1]);
+ 			console.log(buff.toString('utf8'))
 
-  	//		buff.writeUInt8(data, xeon - 1);
-  	//		console.log(buff.toString('utf8', xeon, xeon + 1 ))
-  		}
-  		this.emit('conf', 'aye aye!')
-  	});
+ 	//		buff.writeUInt8(data, xeon - 1);
+ 	//		console.log(buff.toString('utf8', xeon, xeon + 1 ))
+ 		}
+ 		this.emit('conf', 'aye aye!')
+ 	});
 
-  });
+ });
 
